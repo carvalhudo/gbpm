@@ -1,7 +1,7 @@
 from argparse import ArgumentParser
 from sys import argv
 
-from actions import AddPkgRepositoryAction
+from actions import AddPkgRepositoryAction, DelPkgRepositoryAction
 
 def main():
     """
@@ -26,8 +26,17 @@ def main():
             '--add-pkg-repository',
             metavar='repo-url',
             type=str,
-            help='add a pkg repository to the gbpm mirror list',
+            help='add a pkg repository to the mirror list',
             action=AddPkgRepositoryAction
+        )
+
+        parser.add_argument(
+            '-d',
+            '--del-pkg-repository',
+            metavar='repo-url',
+            type=str,
+            help='delete a pkg repository from the mirror list',
+            action=DelPkgRepositoryAction
         )
 
         # no arguments were provided
