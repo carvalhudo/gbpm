@@ -1,0 +1,7 @@
+{
+    "name": "qux_pkg",
+    "repo": "qux_repo",
+    "branch": "qux_branch",
+    "dependencies": [],
+    "maintainer": "André L. C. Moreira <alcm99@gmail.com>"
+}

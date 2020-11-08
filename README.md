@@ -1,14 +1,13 @@
-## GBPM
+## GUR
 
-[![gbpm lint](https://github.com/carvalhudo/gbpm/workflows/lint/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Alint)
-[![gbpm tests](https://github.com/carvalhudo/gbpm/workflows/tests/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Atests)
-[![codecov](https://codecov.io/gh/carvalhudo/gbpm/branch/master/graph/badge.svg)](https://codecov.io/gh/carvalhudo/gbpm)
+[![CI](https://github.com/carvalhudo/gur/actions/workflows/ci.yml/badge.svg)](https://github.com/carvalhudo/gur/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/carvalhudo/gur/branch/develop/graph/badge.svg)](https://codecov.io/gh/carvalhudo/gur)
 
 TODO
 
 ### Running the tests
 
 ```
-$ docker image build -t gbpm-tests -f tests/Dockerfile .
-$ docker container run -v $(pwd):/gbpm --rm --name gbpm gbpm-tests:latest
+$ docker image build -t gur-tests -f tests/Dockerfile .
+$ docker container run -v $(pwd):/gur --rm --name gur gur-tests:latest
 ```
