@@ -60,12 +60,13 @@ class MirrorsMgr:
             mirrors_file.truncate()
             mirrors_file.writelines(mirrors)
 
-    @property
-    def mirrors_file(self):
+    def get_mirrors(self):
         """
-        Get the 'mirrors' filepath
-
-        :returns: The absolute path of the file
+        Get the mirrors file content
+        :returns: The mirrors file content
 
         """
-        return self.__mirrors_file
+        with open(self.__mirrors_file, 'r') as mirrors:
+            return [
+                mirror.replace('\n', '') for mirror in mirrors.readlines()
+            ]
