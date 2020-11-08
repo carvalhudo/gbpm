@@ -1,0 +1,7 @@
+{
+    "name": "bar_pkg",
+    "repo": "bar_repo",
+    "branch": "bar_branch",
+    "dependencies": [],
+    "maintainer": "André L. C. Moreira <alcm99@gmail.com>"
+}
