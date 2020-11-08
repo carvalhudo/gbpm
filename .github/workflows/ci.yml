@@ -1,0 +1,72 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  Tests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Build docker image for unit testing
+      run: docker image build -t gbpm-tests -f tests/Dockerfile .
+
+    - name: Running unit tests
+      run: docker container run -v $(pwd):/gbpm --rm --name gbpm gbpm-tests:latest
+
+  Coverage:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+    env:
+      OS: ${{ matrix.os }}
+      PYTHON: '3.7'
+    steps:
+    - uses: actions/checkout@master
+    - name: Setup Python
+      uses: actions/setup-python@master
+      with:
+        python-version: 3.7
+
+    - name: Build docker image for unit testing
+      run: docker image build -t gbpm-tests -f tests/Dockerfile .
+
+    - name: Running unit tests and generate coverage report
+      run: docker container run -v $(pwd):/gbpm --rm --name gbpm --tty gbpm-tests:latest
+
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: tests/unit/resources/coverage.xml
+        directory: ./coverage/reports/
+        flags: unittests
+        env_vars: OS,PYTHON
+        name: codecov-umbrella
+        fail_ci_if_error: true
+        path_to_write_report: ./coverage/codecov_report.txt
+        verbose: true
+
+  Lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint tqdm gitpython
+
+    - name: Analysing the code with pylint
+      run: |
+        cd gbpm
+        pylint -E `ls -R|grep .py$|xargs`

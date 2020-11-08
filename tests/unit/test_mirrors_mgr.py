@@ -1,240 +1,69 @@
 from unittest import TestCase, main
 
-from app.mirrors_mgr import MirrorsMgr
-from logging import basicConfig as basic_config
-from logging import INFO, info
+from mirrors_mgr import MirrorsMgr
 
 class MirrorsMgrTest(TestCase):
 
     """
-    Implementation of unit tests for mirrors manager
+    Implementation of unit tests for MirrorsMgr class.
 
     """
 
-    def setUp(self):
+    def test_get_multiple_mirrors(self):
         """
-        Suite setup
+        GIVEN the mirrors file contain multiple entries.
+        WHEN  the user attempt to retrieve the file content.
+        THEN  the call must return a list containing the registered
+              mirrors.
 
         """
-        self.mgr = MirrorsMgr()
-
-        # create the 'mirrors' file
-        with open(self.mgr.mirrors_file, 'w'):
-            pass
-
-    def tearDown(self):
-        """
-        Suite teardown
-
-        """
-        # clear the mirrors file
-        with open(self.mgr.mirrors_file, 'w') as mirrors_file:
-            mirrors_file.truncate(0)
-
-    def test_add_single_repo(self):
-        """
-        GIVEN the mirrors file is initially empty.
-        WHEN  the user add a pkg repository using the mirrors mgr.
-        THEN  the mirrors file must contain the given repository url.
-        """
-        repo_url = 'https://github.com/foo/foo.git'
-        branch = 'master'
-
-        self.mgr.add_repo(repo_url, branch)
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
-
-            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-            self.assertEqual(len(mirrors_content), 1)
-
-    def test_add_multiple_repo(self):
-        """
-        GIVEN the mirrors file is intially empty.
-        WHEN  the user add multiple pkg repository using the mirrors mgr.
-        THEN  the mirrors file must contain all the added repositories.
-        """
-        branch = 'master'
-        repo_urls = [
-            'https://github.com/foo/foo.git',
-            'https://github.com/bar/bar.git',
-            'https://github.com/baz/baz.git',
-            'https://github.com/qux/qux.git'
+        mirrors = [
+            'master,https://github.com/user/repo_1.git',
+            'master,https://github.com/user/repo_2.git',
+            'master,https://github.com/user/repo_3.git',
+            'master,https://github.com/user/repo_4.git',
         ]
 
-        for entry in repo_urls:
-            self.mgr.add_repo(entry, branch)
+        with open(MirrorsMgr.mirrors_file, 'w') as mirrors_file:
+            for i in mirrors:
+                mirrors_file.write(i + '\n')
 
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
+        content = MirrorsMgr.get_mirrors()
 
-            for entry in repo_urls:
-                self.assertIn(f'{branch}:{entry}\n', mirrors_content)
+        self.assertEqual(len(mirrors), len(content))
+        self.assertEqual(mirrors, content)
 
-            self.assertEqual(len(mirrors_content), len(repo_urls))
-
-    def test_add_existent_repo(self):
+    def test_get_single_mirror(self):
         """
-        GIVEN the mirrors file is intially empty.
-        WHEN  the user add a pkg repository which already exist on mirrors file,
-              using the mirrors mgr.
-        THEN  the mirrors file must contain only one line related to the given
-              repository url.
+        GIVEN the mirrors file contain a single entry.
+        WHEN  the user attempt to retrieve the file content.
+        THEN  the call must return a list containing only one registered
+              mirror.
+
         """
-        repo_url = 'https://github.com/foo/foo.git',
-        branch = 'master'
+        mirror = ['master,https://github.com/user/repo.git']
 
-        self.mgr.add_repo(repo_url, branch)
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
+        with open(MirrorsMgr.mirrors_file, 'w') as mirrors_file:
+            mirrors_file.writelines(mirror)
 
-            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-            self.assertEqual(len(mirrors_content), 1)
+        content = MirrorsMgr.get_mirrors()
 
-            self.mgr.add_repo(repo_url, branch)
+        self.assertEqual(len(content), len(mirror))
+        self.assertEqual(mirror, content)
 
-            mirrors_file.seek(0)
-            mirrors_content = mirrors_file.readlines()
-
-            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-            self.assertEqual(len(mirrors_content), 1)
-
-    def test_add_repo_with_different_branch(self):
-        """
-        GIVEN the mirrors file is intially empty.
-        WHEN  the user add a pkg repository which already exist on mirrors file
-              specifying a different branch, using the mirrors mgr.
-        THEN  the mirrors file must contain the both entries with different branches.
-        """
-        repo_url = 'https://github.com/foo/foo.git'
-        branches = [
-            'master',
-            'develop',
-            'foo'
-        ]
-
-        for branch in branches:
-            self.mgr.add_repo(repo_url, branch)
-
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
-
-            for branch in branches:
-                self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-
-            self.assertEqual(len(mirrors_content), len(branches))
-
-    def test_del_single_existent_repo(self):
-        """
-        GIVEN the mirrors file contains a single package repository.
-        WHEN  the user delete a repository which already exist from mirrors file,
-              using the mirrors mgr.
-        THEN  the mirrors file must be empty.
-        """
-        repo_url = 'https://github.com/foo/foo.git',
-        branch = 'master'
-
-        self.mgr.add_repo(repo_url, branch)
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
-
-            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-            self.assertEqual(len(mirrors_content), 1)
-
-            self.mgr.del_repo(repo_url, branch)
-
-            mirrors_file.seek(0)
-            mirrors_content = mirrors_file.readlines()
-
-            self.assertNotIn(f'{branch}:{repo_url}\n', mirrors_content)
-            self.assertEqual(len(mirrors_content), 0)
-
-    def test_del_single_repo_from_file_containing_multiple(self):
-        """
-        GIVEN the mirrors file contains multiple package repository.
-        WHEN  the user delete a single repository which already exist from mirrors file,
-              using the mirrors mgr.
-        THEN  the mirrors file must contain only the another entries.
-        """
-        branch = 'master'
-        repo_urls = [
-            'https://github.com/foo/foo.git',
-            'https://github.com/bar/bar.git',
-            'https://github.com/baz/baz.git',
-            'https://github.com/qux/qux.git'
-        ]
-
-        for repo in repo_urls:
-            self.mgr.add_repo(repo, branch)
-
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
-
-            for repo in repo_urls:
-                self.assertIn(f'{branch}:{repo}\n', mirrors_content)
-
-            self.assertEqual(len(mirrors_content), len(repo_urls))
-
-            self.mgr.del_repo(repo_urls[0], branch)
-
-            mirrors_file.seek(0)
-            mirrors_content = mirrors_file.readlines()
-
-            self.assertNotIn(f'{branch}:{repo[0]}\n', mirrors_content)
-            self.assertEqual(len(mirrors_content), (len(repo_urls) - 1))
-
-            for repo in repo_urls[1:]:
-                self.assertIn(f'{branch}:{repo}\n', mirrors_content)
-
-    def test_del_single_repo_from_file_containing_the_same_repo_with_different_branches(self):
-        """
-        GIVEN the mirrors file contains multiple definitions of the same repository
-              with different branches.
-        WHEN  the user delete a single repository from mirrors file, using the mirrors
-              mgr.
-        THEN  the mirrors file must contain only the another entries.
-        """
-        repo_url = 'https://github.com/foo/foo.git'
-        branches = [
-            'master',
-            'develop',
-            'foo'
-        ]
-
-        for branch in branches:
-            self.mgr.add_repo(repo_url, branch)
-
-        with open(self.mgr.mirrors_file, 'r') as mirrors_file:
-            mirrors_content = mirrors_file.readlines()
-
-            for branch in branches:
-                self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-
-            self.assertEqual(len(mirrors_content), len(branches))
-
-            self.mgr.del_repo(repo_url, branches[1])
-
-            mirrors_file.seek(0)
-            mirrors_content = mirrors_file.readlines()
-
-            del branches[1]
-            for branch in branches:
-                self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
-
-            self.assertEqual(len(mirrors_content), len(branches))
-
-    def test_del_repo_from_empty_mirrors_file(self):
+    def test_get_mirror_from_empty_file(self):
         """
         GIVEN the mirrors file is empty.
-        WHEN  the user try to delete a repository from an empty mirrors file,
-              using the mirrors mgr.
-        THEN  a 'RuntimeError' exception must be raised.
-        """
-        repo_url = 'foo'
-        branch = 'master'
+        WHEN  the user attempt to retrieve the file content.
+        THEN  the call must return an empty list.
 
-        with self.assertRaises(RuntimeError):
-            self.mgr.del_repo(repo_url, branch)
+        """
+        with open(MirrorsMgr.mirrors_file, 'w') as mirrors_file:
+            mirrors_file.write('')
+
+        content = MirrorsMgr.get_mirrors()
+
+        self.assertEqual(len(content), 0)
 
 if __name__ == "__main__":
-    basic_config(level=INFO)
     main()
