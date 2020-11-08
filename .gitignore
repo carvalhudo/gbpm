@@ -1,0 +1,4 @@
+*.xml
+tags
+__pycache__/
+tests/unit/__pycache__/

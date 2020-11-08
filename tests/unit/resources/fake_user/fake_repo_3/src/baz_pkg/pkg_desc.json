@@ -1,0 +1,7 @@
+{
+    "name": "baz_pkg",
+    "repo": "baz_repo",
+    "branch": "baz_branch",
+    "dependencies": [],
+    "maintainer": "André L. C. Moreira <alcm99@gmail.com>"
+}
