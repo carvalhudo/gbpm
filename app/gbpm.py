@@ -1,5 +1,5 @@
-from argparse import ArgumentParser
 from sys import argv
+from argparse import ArgumentParser
 
 from actions import AddPkgRepositoryAction, DelPkgRepositoryAction
 
@@ -50,5 +50,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except Exception as e:
-        print(e)
+    except Exception as err:
+        print(err)

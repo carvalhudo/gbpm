@@ -1,6 +1,6 @@
 from os.path import isfile
 
-class MirrorsMgr(object):
+class MirrorsMgr:
 
     """
     Class responsible for the management of the mirrors file of gbpm

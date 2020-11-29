@@ -1,5 +1,10 @@
 ## GBPM
 
+[![gbpm tests](https://github.com/carvalhudo/gbpm/workflows/tests/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Atests)
+[![gbpm lint](https://github.com/carvalhudo/gbpm/workflows/lint/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Alint)
+
+### Overview
+
 TODO
 
 ### Running the tests

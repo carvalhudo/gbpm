@@ -14,7 +14,7 @@ class AddPkgRepositoryAction(Action):
         Initialize the current class instance
 
         """
-        super(AddPkgRepositoryAction, self).__init__(
+        super().__init__(
             option_strings,
             dest,
             **kwargs
@@ -41,7 +41,7 @@ class DelPkgRepositoryAction(Action):
         Initialize the current class instance
 
         """
-        super(DelPkgRepositoryAction, self).__init__(
+        super().__init__(
             option_strings,
             dest,
             **kwargs
