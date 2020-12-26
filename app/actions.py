@@ -1,6 +1,7 @@
 from argparse import Action
 
 from mirrors_mgr import MirrorsMgr
+from validators import add_repo_validator
 
 class AddPkgRepositoryAction(Action):
 
@@ -25,9 +26,11 @@ class AddPkgRepositoryAction(Action):
         Execute the 'AddPkgRepository' action
 
         """
-        mgr = MirrorsMgr()
+        if not add_repo_validator(values):
+            raise ValueError('Error: invalid repo format.')
 
-        mgr.add_repo(values)
+        branch,repo = values.split(':', 1)
+        MirrorsMgr().add_repo(repo, branch)
 
 class DelPkgRepositoryAction(Action):
 
@@ -52,6 +55,6 @@ class DelPkgRepositoryAction(Action):
         Execute the 'DelPkgRepository' action
 
         """
-        mgr = MirrorsMgr()
+        branch,repo = values.split(':', 1)
 
-        mgr.del_repo(values)
+        MirrorsMgr().del_repo(repo, branch)

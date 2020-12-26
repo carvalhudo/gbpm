@@ -1,7 +1,10 @@
 from sys import argv
 from argparse import ArgumentParser
 
-from actions import AddPkgRepositoryAction, DelPkgRepositoryAction
+from actions import (
+    AddPkgRepositoryAction,
+    DelPkgRepositoryAction
+)
 
 def main():
     """
@@ -18,13 +21,10 @@ def main():
                 + 'available at: github.com/carvalhudo/gbpm/doc (TODO)'
         )
 
-        # The mirrors file contains a list of package repositories which will
-        # be used during the 'update' operation. Such file has the same goal
-        # of 'sources.list' of 'apt' package manager
         parser.add_argument(
             '-a',
             '--add-pkg-repository',
-            metavar='repo-url',
+            metavar='branch:repo-url',
             type=str,
             help='add a pkg repository to the mirror list',
             action=AddPkgRepositoryAction
@@ -33,7 +33,7 @@ def main():
         parser.add_argument(
             '-d',
             '--del-pkg-repository',
-            metavar='repo-url',
+            metavar='branch:repo-url',
             type=str,
             help='delete a pkg repository from the mirror list',
             action=DelPkgRepositoryAction
@@ -45,10 +45,10 @@ def main():
 
         parser.parse_args()
     except PermissionError:
-        print('you must to run with root privilegies!')
+        print('Error: you must to run with root privilegies.')
+    except ValueError as err:
+        print(err)
+        parser.print_help()
 
 if __name__ == '__main__':
-    try:
-        main()
-    except Exception as err:
-        print(err)
+    main()

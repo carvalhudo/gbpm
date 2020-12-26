@@ -5,6 +5,9 @@ class MirrorsMgr:
     """
     Class responsible for the management of the mirrors file of gbpm
 
+    The mirrors file contains a list of package repositories which will
+    be used during the 'update' operation. Such file has the same goal
+    of 'sources.list' of 'apt' package manager
     """
 
     def __init__(self):
@@ -19,28 +22,30 @@ class MirrorsMgr:
                 f"the config file '{self.__mirrors_file}' was not found!"
             )
 
-    def add_repo(self, repo_url):
+    def add_repo(self, repo_url, branch):
         """
         Add a new package repository into the mirrors config file
 
         :repo_url: URL of package repository
+        :branch: Branch of repository
 
         """
         with open(self.__mirrors_file, 'r+') as mirrors_file:
-            mirror_entry = f'{repo_url}\n'
+            mirror_entry = f'{branch}:{repo_url}\n'
 
             if mirror_entry not in mirrors_file.readlines():
                 mirrors_file.write(mirror_entry)
 
-    def del_repo(self, repo_url):
+    def del_repo(self, repo_url, branch):
         """
         Delete an existing package repository from mirrors config file
 
         :repo_url: URL of package repository
+        :branch: Branch of repository
 
         """
         with open(self.__mirrors_file, 'r+') as mirrors_file:
-            mirror_entry = f'{repo_url}\n'
+            mirror_entry = f'{branch}:{repo_url}\n'
             mirrors = mirrors_file.readlines()
 
             if not mirror_entry in mirrors:
