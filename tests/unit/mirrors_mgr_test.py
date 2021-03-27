@@ -45,8 +45,8 @@ class MirrorsMgrTest(TestCase):
         with open(self.mgr.mirrors_file, 'r') as mirrors_file:
             mirrors_content = mirrors_file.readlines()
 
-            assert f'{branch}:{repo_url}\n' in mirrors_content
-            assert len(mirrors_content) == 1
+            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
+            self.assertEqual(len(mirrors_content), 1)
 
     def add_multiple_repo_test(self):
         """
@@ -69,9 +69,9 @@ class MirrorsMgrTest(TestCase):
             mirrors_content = mirrors_file.readlines()
 
             for entry in repo_urls:
-                assert f'{branch}:{entry}\n' in mirrors_content
+                self.assertIn(f'{branch}:{entry}\n', mirrors_content)
 
-            assert len(mirrors_content) == len(repo_urls)
+            self.assertEqual(len(mirrors_content), len(repo_urls))
 
     def add_existent_repo_test(self):
         """
@@ -88,16 +88,16 @@ class MirrorsMgrTest(TestCase):
         with open(self.mgr.mirrors_file, 'r') as mirrors_file:
             mirrors_content = mirrors_file.readlines()
 
-            assert f'{branch}:{repo_url}\n' in mirrors_content
-            assert len(mirrors_content) == 1
+            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
+            self.assertEqual(len(mirrors_content), 1)
 
             self.mgr.add_repo(repo_url, branch)
 
             mirrors_file.seek(0)
             mirrors_content = mirrors_file.readlines()
 
-            assert f'{branch}:{repo_url}\n' in mirrors_content
-            assert len(mirrors_content) == 1
+            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
+            self.assertEqual(len(mirrors_content), 1)
 
     def add_repo_with_different_branch_test(self):
         """
@@ -120,9 +120,9 @@ class MirrorsMgrTest(TestCase):
             mirrors_content = mirrors_file.readlines()
 
             for branch in branches:
-                assert f'{branch}:{repo_url}\n' in mirrors_content
+                self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
 
-            assert len(mirrors_content) == len(branches)
+            self.assertEqual(len(mirrors_content), len(branches))
 
     def del_single_existent_repo_test(self):
         """
@@ -138,16 +138,16 @@ class MirrorsMgrTest(TestCase):
         with open(self.mgr.mirrors_file, 'r') as mirrors_file:
             mirrors_content = mirrors_file.readlines()
 
-            assert f'{branch}:{repo_url}\n' in mirrors_content
-            assert len(mirrors_content) == 1
+            self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
+            self.assertEqual(len(mirrors_content), 1)
 
             self.mgr.del_repo(repo_url, branch)
 
             mirrors_file.seek(0)
             mirrors_content = mirrors_file.readlines()
 
-            assert f'{branch}:{repo_url}\n' not in mirrors_content
-            assert len(mirrors_content) == 0
+            self.assertNotIn(f'{branch}:{repo_url}\n', mirrors_content)
+            self.assertEqual(len(mirrors_content), 0)
 
     def del_single_repo_from_file_containing_multiple_test(self):
         """
@@ -171,20 +171,20 @@ class MirrorsMgrTest(TestCase):
             mirrors_content = mirrors_file.readlines()
 
             for repo in repo_urls:
-                assert f'{branch}:{repo}\n' in mirrors_content
+                self.assertIn(f'{branch}:{repo}\n', mirrors_content)
 
-            assert len(mirrors_content) == len(repo_urls)
+            self.assertEqual(len(mirrors_content), len(repo_urls))
 
             self.mgr.del_repo(repo_urls[0], branch)
 
             mirrors_file.seek(0)
             mirrors_content = mirrors_file.readlines()
 
-            assert f'{branch}:{repo[0]}\n' not in mirrors_content
-            assert len(mirrors_content) == (len(repo_urls) - 1)
+            self.assertNotIn(f'{branch}:{repo[0]}\n', mirrors_content)
+            self.assertEqual(len(mirrors_content), (len(repo_urls) - 1))
 
             for repo in repo_urls[1:]:
-                assert f'{branch}:{repo}\n' in mirrors_content
+                self.assertIn(f'{branch}:{repo}\n', mirrors_content)
 
     def del_single_repo_from_file_containing_the_same_repo_with_different_branches_test(self):
         """
@@ -208,9 +208,9 @@ class MirrorsMgrTest(TestCase):
             mirrors_content = mirrors_file.readlines()
 
             for branch in branches:
-                assert f'{branch}:{repo_url}\n' in mirrors_content
+                self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
 
-            assert len(mirrors_content) == len(branches)
+            self.assertEqual(len(mirrors_content), len(branches))
 
             self.mgr.del_repo(repo_url, branches[1])
 
@@ -219,9 +219,9 @@ class MirrorsMgrTest(TestCase):
 
             del branches[1]
             for branch in branches:
-                assert f'{branch}:{repo_url}\n' in mirrors_content
+                self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
 
-            assert len(mirrors_content) == len(branches)
+            self.assertEqual(len(mirrors_content), len(branches))
 
     def del_repo_from_empty_mirrors_file_test(self):
         """
@@ -232,15 +232,9 @@ class MirrorsMgrTest(TestCase):
         """
         repo_url = 'foo'
         branch = 'master'
-        exception = None
 
-        try:
+        with self.assertRaises(RuntimeError):
             self.mgr.del_repo(repo_url, branch)
-        except Exception as e:
-            exception = e
-
-        assert exception != None
-        assert isinstance(exception, RuntimeError) == True
 
 if __name__ == "__main__":
     basic_config(level=INFO)

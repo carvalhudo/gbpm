@@ -17,7 +17,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'master:https://github.com/foo/bar.git'
 
-        assert add_repo_validator(entry) == True
+        self.assertTrue(add_repo_validator(entry))
 
     def valid_ssh_repo_entry_test(self):
         """
@@ -27,7 +27,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'master:git@github.com:foo/bar.git'
 
-        assert add_repo_validator(entry) == True
+        self.assertTrue(add_repo_validator(entry))
 
     def valid_https_repo_without_branch_entry_test(self):
         """
@@ -37,7 +37,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'https://github.com/foo/bar.git'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
     def valid_https_repo_with_empty_branch_entry_test(self):
         """
@@ -47,7 +47,7 @@ class ValidatorsTest(TestCase):
         """
         entry = ':https://github.com/foo/bar.git'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
     def valid_ssh_repo_without_branch_entry_test(self):
         """
@@ -57,7 +57,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'git@github.com:foo/bar.git'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
     def valid_ssh_repo_with_empty_branch_entry_test(self):
         """
@@ -67,7 +67,7 @@ class ValidatorsTest(TestCase):
         """
         entry = ':git@github.com:foo/bar.git'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
     def invalid_https_repo_entry_test(self):
         """
@@ -77,7 +77,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'master:https://github.com/foo/bar.get'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
     def invalid_ssh_repo_entry_test(self):
         """
@@ -87,7 +87,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'master:git@github.c:foo/bar.git'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
     def random_repo_entry_test(self):
         """
@@ -97,7 +97,7 @@ class ValidatorsTest(TestCase):
         """
         entry = 'foo:bar.git'
 
-        assert add_repo_validator(entry) == False
+        self.assertFalse(add_repo_validator(entry))
 
 if __name__ == "__main__":
     main()

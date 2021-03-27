@@ -2,6 +2,7 @@
 
 [![gbpm tests](https://github.com/carvalhudo/gbpm/workflows/tests/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Atests)
 [![gbpm lint](https://github.com/carvalhudo/gbpm/workflows/lint/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Alint)
+[![codecov](https://codecov.io/gh/carvalhudo/gbpm/branch/master/graph/badge.svg?token=XFHGAPDUQZ)](https://codecov.io/gh/carvalhudo/gbpm)
 
 ### Overview
 

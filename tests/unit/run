@@ -1,0 +1,7 @@
+#!/bin/sh
+
+nosetests -c /gbpm/tests/unit/nose.cfg
+coverage xml
+chmod 777 coverage.xml
+
+exit 0
