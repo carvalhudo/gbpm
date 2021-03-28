@@ -9,7 +9,7 @@ class ValidatorsTest(TestCase):
 
     """
 
-    def valid_https_repo_entry_test(self):
+    def test_valid_https_repo_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify a valid https repository.
@@ -19,7 +19,7 @@ class ValidatorsTest(TestCase):
 
         self.assertTrue(add_repo_validator(entry))
 
-    def valid_ssh_repo_entry_test(self):
+    def test_valid_ssh_repo_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify a valid ssh repository.
@@ -29,7 +29,7 @@ class ValidatorsTest(TestCase):
 
         self.assertTrue(add_repo_validator(entry))
 
-    def valid_https_repo_without_branch_entry_test(self):
+    def test_valid_https_repo_without_branch_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify a valid https repository without a branch.
@@ -39,7 +39,7 @@ class ValidatorsTest(TestCase):
 
         self.assertFalse(add_repo_validator(entry))
 
-    def valid_https_repo_with_empty_branch_entry_test(self):
+    def test_valid_https_repo_with_empty_branch_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify a valid https repository with an empty branch.
@@ -49,7 +49,7 @@ class ValidatorsTest(TestCase):
 
         self.assertFalse(add_repo_validator(entry))
 
-    def valid_ssh_repo_without_branch_entry_test(self):
+    def test_valid_ssh_repo_without_branch_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify a valid ssh repository without a branch.
@@ -59,7 +59,7 @@ class ValidatorsTest(TestCase):
 
         self.assertFalse(add_repo_validator(entry))
 
-    def valid_ssh_repo_with_empty_branch_entry_test(self):
+    def test_valid_ssh_repo_with_empty_branch_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify a valid ssh repository with an empty branch.
@@ -69,7 +69,7 @@ class ValidatorsTest(TestCase):
 
         self.assertFalse(add_repo_validator(entry))
 
-    def invalid_https_repo_entry_test(self):
+    def test_invalid_https_repo_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify an invalid https repository.
@@ -79,7 +79,7 @@ class ValidatorsTest(TestCase):
 
         self.assertFalse(add_repo_validator(entry))
 
-    def invalid_ssh_repo_entry_test(self):
+    def test_invalid_ssh_repo_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify an invalid ssh repository.
@@ -89,7 +89,7 @@ class ValidatorsTest(TestCase):
 
         self.assertFalse(add_repo_validator(entry))
 
-    def random_repo_entry_test(self):
+    def test_random_repo_entry(self):
         """
         GIVEN the user used the '-a' option.
         WHEN  the user specify random repository name.

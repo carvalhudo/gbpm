@@ -31,7 +31,7 @@ class MirrorsMgrTest(TestCase):
         with open(self.mgr.mirrors_file, 'w') as mirrors_file:
             mirrors_file.truncate(0)
 
-    def add_single_repo_test(self):
+    def test_add_single_repo(self):
         """
         GIVEN the mirrors file is initially empty.
         WHEN  the user add a pkg repository using the mirrors mgr.
@@ -47,7 +47,7 @@ class MirrorsMgrTest(TestCase):
             self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
             self.assertEqual(len(mirrors_content), 1)
 
-    def add_multiple_repo_test(self):
+    def test_add_multiple_repo(self):
         """
         GIVEN the mirrors file is intially empty.
         WHEN  the user add multiple pkg repository using the mirrors mgr.
@@ -72,7 +72,7 @@ class MirrorsMgrTest(TestCase):
 
             self.assertEqual(len(mirrors_content), len(repo_urls))
 
-    def add_existent_repo_test(self):
+    def test_add_existent_repo(self):
         """
         GIVEN the mirrors file is intially empty.
         WHEN  the user add a pkg repository which already exist on mirrors file,
@@ -98,7 +98,7 @@ class MirrorsMgrTest(TestCase):
             self.assertIn(f'{branch}:{repo_url}\n', mirrors_content)
             self.assertEqual(len(mirrors_content), 1)
 
-    def add_repo_with_different_branch_test(self):
+    def test_add_repo_with_different_branch(self):
         """
         GIVEN the mirrors file is intially empty.
         WHEN  the user add a pkg repository which already exist on mirrors file
@@ -123,7 +123,7 @@ class MirrorsMgrTest(TestCase):
 
             self.assertEqual(len(mirrors_content), len(branches))
 
-    def del_single_existent_repo_test(self):
+    def test_del_single_existent_repo(self):
         """
         GIVEN the mirrors file contains a single package repository.
         WHEN  the user delete a repository which already exist from mirrors file,
@@ -148,7 +148,7 @@ class MirrorsMgrTest(TestCase):
             self.assertNotIn(f'{branch}:{repo_url}\n', mirrors_content)
             self.assertEqual(len(mirrors_content), 0)
 
-    def del_single_repo_from_file_containing_multiple_test(self):
+    def test_del_single_repo_from_file_containing_multiple(self):
         """
         GIVEN the mirrors file contains multiple package repository.
         WHEN  the user delete a single repository which already exist from mirrors file,
@@ -185,7 +185,7 @@ class MirrorsMgrTest(TestCase):
             for repo in repo_urls[1:]:
                 self.assertIn(f'{branch}:{repo}\n', mirrors_content)
 
-    def del_single_repo_from_file_containing_the_same_repo_with_different_branches_test(self):
+    def test_del_single_repo_from_file_containing_the_same_repo_with_different_branches(self):
         """
         GIVEN the mirrors file contains multiple definitions of the same repository
               with different branches.
@@ -222,7 +222,7 @@ class MirrorsMgrTest(TestCase):
 
             self.assertEqual(len(mirrors_content), len(branches))
 
-    def del_repo_from_empty_mirrors_file_test(self):
+    def test_del_repo_from_empty_mirrors_file(self):
         """
         GIVEN the mirrors file is empty.
         WHEN  the user try to delete a repository from an empty mirrors file,
