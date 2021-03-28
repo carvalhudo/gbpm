@@ -18,7 +18,7 @@ jobs:
     - name: Build docker image for unit testing
       run: docker image build -t gbpm-tests -f tests/Dockerfile .
     - name: Running unit tests and generate coverage report
-      run: docker container run -v $(pwd):/gbpm --rm --name gbpm gbpm-tests:latest
+      run: docker container run -v $(pwd):/gbpm --rm --name gbpm --tty gbpm-tests:latest
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v1
       with:

@@ -1,4 +1,3 @@
-from os import remove
 from unittest import TestCase, main
 
 from app.mirrors_mgr import MirrorsMgr

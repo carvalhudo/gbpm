@@ -5,5 +5,4 @@ RUN mkdir /etc/gbpm && touch /etc/gbpm/mirrors.conf
 
 WORKDIR /gbpm
 RUN pip3 install -r /tmp/requirements.txt
-#ENTRYPOINT ["nosetests", "--rednose", "-c", "/gbpm/tests/unit/nose.cfg", "&&", "coverage", "xml"]
-ENTRYPOINT ["/bin/sh", "/gbpm/tests/unit/run"]
+ENTRYPOINT ["nosetests", "-c", "/gbpm/tests/unit/nose.cfg"]
