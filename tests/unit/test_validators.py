@@ -1,6 +1,6 @@
 from unittest import TestCase, main
 
-from app.validators import add_repo_validator
+from validators import add_repo_validator
 
 class ValidatorsTest(TestCase):
 
