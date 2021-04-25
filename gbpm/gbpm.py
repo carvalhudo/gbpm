@@ -1,16 +1,7 @@
 from sys import argv
 from argparse import ArgumentParser
 
-from views import CliUpdateView
-
-def run(args):
-    """
-    Main routine of gbpm.
-
-    """
-    if args.update:
-        view = CliUpdateView()
-        view.update()
+from app import App
 
 def parse_args():
     """
@@ -40,7 +31,8 @@ def parse_args():
 if __name__ == '__main__':
     try:
         args = parse_args()
+        app = App(args)
 
-        run(args)
+        app.run()
     except Exception as e:
         print(e)

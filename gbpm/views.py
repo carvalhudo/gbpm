@@ -1,7 +1,7 @@
 from update_listener import UpdateListener
 
 from tqdm import tqdm
-from package_database_mgr import PackageDatabaseMgr
+from commands import UpdateCmd
 
 class CliUpdateView(UpdateListener):
 
@@ -11,7 +11,7 @@ class CliUpdateView(UpdateListener):
         """TODO: to be defined. """
         UpdateListener.__init__(self)
 
-        self.db_mgr = PackageDatabaseMgr()
+        self.cmd = UpdateCmd()
         self.prog_bar = None
 
     def update(self):
@@ -19,7 +19,7 @@ class CliUpdateView(UpdateListener):
         :returns: TODO
 
         """
-        self.db_mgr.update(self)
+        self.cmd.execute(self)
 
     def on_update_start(self):
         """

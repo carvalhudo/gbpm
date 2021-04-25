@@ -9,8 +9,8 @@ class MirrorsMgr:
     of 'sources.list' of 'apt' package manager
     """
 
-    #mirrors_file = '/etc/gbpm/mirrors.csv'
-    mirrors_file = '../mirrors.csv'
+    mirrors_file = '/etc/gbpm/mirrors.csv'
+    #mirrors_file = '../mirrors.csv'
 
     @classmethod
     def get_mirrors(cls):
