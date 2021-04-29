@@ -304,6 +304,63 @@ class UpdateTest(TestCase):
             ]
         )
 
+    @patch('os.path.isdir')
+    @patch('os.listdir')
+    @patch('package_database_mgr.PackageDatabaseMgr')
+    @patch('git.Repo')
+    @patch('views.CliUpdateView')
+    def test_update_with_single_repo_and_single_package(
+        self,
+        listener_mock,
+        git_mock,
+        pkg_mgr_mock,
+        listdir_mock,
+        isdir_mock):
+        """
+        GIVEN packages dir is not empty, the mirrors.csv file contains
+              only one repo and it contains only one package.
+        WHEN  the user issues an update command.
+        THEN  the repository must be pulled from origin and the events
+              must be issued to the view properly.
+        """
+        repo_name = 'bar-repo'
+        repo_url = 'https://github.com/foo/{}.git'.format(repo_name)
+        branch_name = 'master'
+
+        with open('/etc/gbpm/mirrors.csv', 'w') as mirrors:
+            mirrors.write('{},{}'.format(branch_name, repo_url))
+
+        listdir_mock.return_value = ['foo-pkg']
+        isdir_mock.return_value = True
+
+        cmd = UpdateCmd(pkg_mgr_mock)
+        cmd.execute(listener_mock)
+
+        listener_mock.assert_has_calls(
+            [
+                call.on_update_start(),
+                call.on_repo_update_start(repo_name, branch_name),
+                call.on_update_progress(1, 0, 1, ''),
+                call.on_update_progress(1, 1, 1, ''),
+                call.on_repo_update_finish(repo_name, branch_name),
+                call.on_update_finish()
+            ]
+        )
+
+        pkg_mgr_mock.assert_has_calls(
+            [
+                call.switch_dir(),
+                call.update_entry('foo-pkg', repo_name)
+            ]
+        )
+
+        git_mock.assert_has_calls(
+            [
+                call(repo_name),
+                call().remotes.origin.pull(branch_name)
+            ]
+        )
+
 if __name__ == "__main__":
     basic_config(level=INFO)
     main()

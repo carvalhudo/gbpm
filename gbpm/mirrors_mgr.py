@@ -10,7 +10,6 @@ class MirrorsMgr:
     """
 
     mirrors_file = '/etc/gbpm/mirrors.csv'
-    #mirrors_file = '../mirrors.csv'
 
     @classmethod
     def get_mirrors(cls):

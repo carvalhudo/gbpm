@@ -1,6 +1,6 @@
 from views import CliUpdateView
 
-class App(object):
+class App:
 
     """Docstring for App. """
 

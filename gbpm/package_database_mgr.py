@@ -94,7 +94,6 @@ class PackageDatabaseMgr:
             pkg_desc_content = load(pkg_desc)
 
             pkg = pkg_desc_content['name']
-            repo = pkg_desc_content['repo']
             branch = pkg_desc_content['branch']
 
         pkg_dir = '{}/{}/.repo'.format(
