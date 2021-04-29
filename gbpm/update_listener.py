@@ -14,7 +14,7 @@ class UpdateListener(ABC):
         operation has started.
 
         """
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def on_update_finish(self):
@@ -23,7 +23,7 @@ class UpdateListener(ABC):
         operation has finished.
 
         """
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def on_repo_update_start(self, repo_name, branch_name):
@@ -35,7 +35,7 @@ class UpdateListener(ABC):
         :branch_name: Name of the branch.
 
         """
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def on_repo_update_finish(self, repo_name, branch_name):
@@ -47,7 +47,7 @@ class UpdateListener(ABC):
         :branch_name: Name of the branch.
 
         """
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def on_update_progress(self, op_code, cur_count, max_count, msg):
@@ -58,7 +58,7 @@ class UpdateListener(ABC):
         :curr_progress: current progress.
 
         """
-        pass
+        pass # pragma: no cover
 
     @abstractmethod
     def on_error(self, msg):
@@ -69,4 +69,4 @@ class UpdateListener(ABC):
         :msg: The error message.
 
         """
-        pass
+        pass # pragma: no cover
