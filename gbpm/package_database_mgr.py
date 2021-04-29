@@ -7,17 +7,12 @@ import git
 class PackageDatabaseMgr:
 
     """
-    Docstring for PackageDatabaseMgr.
+    Class responsible for the management of package database.
 
     """
 
     def __init__(self):
-        """
-        TODO: to be defined.
-
-        """
         self.pkg_dir = "/var/db/gbpm/"
-        #self.pkg_dir = "db/"
         self.db_file = "pkg_db.json"
 
         if not isdir(self.pkg_dir):
@@ -31,15 +26,15 @@ class PackageDatabaseMgr:
             with open(self.db_file, 'w') as f:
                 dump([], f)
 
-    def add_entry(self, entry, base_repo):
+    def add_entry(self, pkg_entry, base_repo):
         """
-        TODO: Docstring for init_db.
+        Add a new package entry into the package database.
 
-        :arg1: TODO
-        :returns: TODO
+        :pkg_entry: Name of the package to be added to the database.
+        :base_repo: Package repository name.
 
         """
-        desc_file = '{}/{}/pkg_desc.json'.format(base_repo, entry)
+        desc_file = '{}/{}/pkg_desc.json'.format(base_repo, pkg_entry)
         pkg = ''
         repo = ''
         branch = ''
@@ -53,7 +48,7 @@ class PackageDatabaseMgr:
 
         pkg_dir = '{}/{}/.repo'.format(
             base_repo,
-            entry
+            pkg_entry
         )
 
         pkg_repo = git.Repo.init(pkg_dir)
@@ -79,14 +74,15 @@ class PackageDatabaseMgr:
 
             dump(curr_content, f)
 
-    def update_entry(self, entry, base_repo):
-        """TODO: Docstring for update_db.
+    def update_entry(self, pkg_entry, base_repo):
+        """
+        Update an existing package entry in the package database.
 
-        :arg1: TODO
-        :returns: TODO
+        :pkg_entry: Name of the package to be added to the database.
+        :base_repo: Package repository name.
 
         """
-        desc_file = '{}/{}/pkg_desc.json'.format(base_repo, entry)
+        desc_file = '{}/{}/pkg_desc.json'.format(base_repo, pkg_entry)
         pkg = ''
         branch = ''
 
@@ -98,7 +94,7 @@ class PackageDatabaseMgr:
 
         pkg_dir = '{}/{}/.repo'.format(
             base_repo,
-            entry
+            pkg_entry
         )
 
         pkg_repo = git.Repo(pkg_dir)
@@ -111,15 +107,15 @@ class PackageDatabaseMgr:
         with open(self.db_file, 'r+') as f:
             curr_content = load(f)
 
-            for pkg_entry in curr_content:
-                if pkg_entry['name'] == pkg:
-                    pkg_entry['remote'] = remote_hash
+            for entry in curr_content:
+                if entry['name'] == pkg:
+                    entry['remote'] = remote_hash
                     f.seek(0)
                     dump(curr_content, f)
 
     def switch_dir(self):
-        """TODO: Docstring for switch_dir.
-        :returns: TODO
+        """
+        Switch the current directory to the package directory.
 
         """
         chdir(self.pkg_dir)
