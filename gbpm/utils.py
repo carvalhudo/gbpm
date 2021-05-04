@@ -2,14 +2,18 @@ from re import search
 
 class Utils:
 
-    """Docstring for Utils. """
+    """
+    Implementation of the utils class, which contains a set of utilitary methods.
+
+    """
 
     @staticmethod
-    def get_repo_name(repo_url):
-        """TODO: Docstring for get_repo_name.
+    def get_repo_id(repo_url):
+        """
+        Get a repository ID.
 
-        :repo_url: TODO
-        :returns: TODO
+        :repo_url: Url of the repository.
+        :returns: The repository ID (in user/repo_name format).
 
         """
         pattern_list = [
@@ -21,7 +25,6 @@ class Utils:
             found = search(pattern, repo_url)
 
             if found:
-                #return '{}/{}'.format(found.group(2), found.group(3))
-                return found.group(3)
+                return '{}/{}'.format(found.group(2), found.group(3))
 
         return ''

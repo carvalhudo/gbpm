@@ -1,22 +1,28 @@
-from update_listener import UpdateListener
-
 from tqdm import tqdm
+
 from commands import UpdateCmd
+from update_listener import UpdateListener
 
 class CliUpdateView(UpdateListener):
 
-    """Docstring for View. """
+    """
+    Implementation of update view.
+
+    """
 
     def __init__(self):
-        """TODO: to be defined. """
+        """
+        Initialize the update view internal data.
+
+        """
         UpdateListener.__init__(self)
 
         self.cmd = UpdateCmd()
         self.prog_bar = None
 
     def update(self):
-        """TODO: Docstring for update.
-        :returns: TODO
+        """
+        Trigger the update command.
 
         """
         self.cmd.execute(self)
@@ -43,6 +49,7 @@ class CliUpdateView(UpdateListener):
         operation for a given repository has started.
 
         :repo_name: Name of the repository which will be updated.
+        :branch_name: Name of the branch.
 
         """
         max_repo_name = 15
@@ -61,16 +68,37 @@ class CliUpdateView(UpdateListener):
         operation for a given repository has finished.
 
         :repo_name: Name of the repository which will be updated.
+        :branch_name: Name of the branch.
 
         """
         self.prog_bar.close()
+
+    def on_pkg_update_start(self, pkg_name, branch_name):
+        """
+        Trigger an pkg_update_start event, which indicates that a update
+        operation for an individual package has started.
+
+        :pkg_name: Name of the package which will be updated.
+        :branch_name: Name of the branch.
+
+        """
+        pass
+
+    def on_pkg_update_finish(self, pkg_name, branch_name):
+        """
+        Trigger an pkg_update_finish event, which indicates that a update
+        operation for an individual package has finished.
+
+        :pkg_name: Name of the package which will be updated.
+        :branch_name: Name of the branch.
+
+        """
+        pass
 
     def on_update_progress(self, op_code, cur_count, max_count, msg):
         """
         Trigger an update_progress event, which reports the current progress
         of the update operation.
-
-        :curr_progress: current progress.
 
         """
         if self.prog_bar.total != max_count:

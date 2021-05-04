@@ -1,9 +1,9 @@
-from sys import argv
 from argparse import ArgumentParser
+from sys import argv
 
 from app import App
 
-def parse_args():
+def parse_args(): # pragma: no cover
     """
     Parse the command line arguments.
 

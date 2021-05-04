@@ -1,7 +1,6 @@
 ## GBPM
 
-[![gbpm lint](https://github.com/carvalhudo/gbpm/workflows/lint/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Alint)
-[![gbpm tests](https://github.com/carvalhudo/gbpm/workflows/tests/badge.svg)](https://github.com/carvalhudo/gbpm/actions?query=workflow%3Atests)
+[![CI](https://github.com/carvalhudo/gbpm/actions/workflows/ci.yml/badge.svg)](https://github.com/carvalhudo/gbpm/actions/workflows/ci.yml)
 [![codecov](https://codecov.io/gh/carvalhudo/gbpm/branch/master/graph/badge.svg)](https://codecov.io/gh/carvalhudo/gbpm)
 
 TODO

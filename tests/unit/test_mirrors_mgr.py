@@ -1,17 +1,13 @@
 from unittest import TestCase, main
-from os import remove
 
 from mirrors_mgr import MirrorsMgr
 
 class MirrorsMgrTest(TestCase):
 
     """
-    Implementation of unit tests for MirrorsMgr class
+    Implementation of unit tests for MirrorsMgr class.
 
     """
-
-    def tearDown(self):
-        remove(MirrorsMgr.mirrors_file)
 
     def test_get_multiple_mirrors(self):
         """
@@ -19,6 +15,7 @@ class MirrorsMgrTest(TestCase):
         WHEN  the user attempt to retrieve the file content.
         THEN  the call must return a list containing the registered
               mirrors.
+
         """
         mirrors = [
             'master,https://github.com/user/repo_1.git',
@@ -42,6 +39,7 @@ class MirrorsMgrTest(TestCase):
         WHEN  the user attempt to retrieve the file content.
         THEN  the call must return a list containing only one registered
               mirror.
+
         """
         mirror = ['master,https://github.com/user/repo.git']
 
@@ -58,6 +56,7 @@ class MirrorsMgrTest(TestCase):
         GIVEN the mirrors file is empty.
         WHEN  the user attempt to retrieve the file content.
         THEN  the call must return an empty list.
+
         """
         with open(MirrorsMgr.mirrors_file, 'w') as mirrors_file:
             mirrors_file.write('')

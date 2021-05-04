@@ -2,15 +2,21 @@ from views import CliUpdateView
 
 class App:
 
-    """Docstring for App. """
+    """
+    Implementation of the main class of the App.
+
+    """
 
     def __init__(self, args):
-        """TODO: to be defined. """
+        """
+        Initialize the app internal data.
+
+        """
         self.args = args
 
     def run(self):
         """
-        Main routine of the app.
+        Run the app according to the specified args.
 
         """
         if self.args.update:

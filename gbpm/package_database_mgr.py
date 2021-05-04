@@ -1,17 +1,22 @@
+from json import dump, load
 from os import chdir
 from os.path import isdir, isfile
-from json import load, dump
 
-import git
+from package_desc import PackageDesc
 
 class PackageDatabaseMgr:
 
     """
-    Class responsible for the management of package database.
+    Implementation of the class responsible for the management of the package
+    database.
 
     """
 
     def __init__(self):
+        """
+        Initialize the package database mgr data.
+
+        """
         self.pkg_dir = "/var/db/gbpm/"
         self.db_file = "pkg_db.json"
 
@@ -22,49 +27,23 @@ class PackageDatabaseMgr:
                 )
             )
 
-        if not isfile(self.db_file):
-            with open(self.db_file, 'w') as f:
+        db_file_path = '{}/{}'.format(self.pkg_dir, self.db_file)
+        if not isfile(db_file_path):
+            with open(db_file_path, 'w') as f:
                 dump([], f)
 
-    def add_entry(self, pkg_entry, base_repo):
+    def add_entry(self, pkg_name, head_commit):
         """
         Add a new package entry into the package database.
 
-        :pkg_entry: Name of the package to be added to the database.
-        :base_repo: Package repository name.
+        :pkg_name: Name of the package.
+        :head_commit: Hash of the head commit of the package.
 
         """
-        desc_file = '{}/{}/pkg_desc.json'.format(base_repo, pkg_entry)
-        pkg = ''
-        repo = ''
-        branch = ''
-
-        with open(desc_file, 'r') as pkg_desc:
-            pkg_desc_content = load(pkg_desc)
-
-            pkg = pkg_desc_content['name']
-            repo = pkg_desc_content['repo']
-            branch = pkg_desc_content['branch']
-
-        pkg_dir = '{}/{}/.repo'.format(
-            base_repo,
-            pkg_entry
-        )
-
-        pkg_repo = git.Repo.init(pkg_dir)
-        origin = pkg_repo.create_remote(
-            'origin',
-            repo
-        )
-        origin.fetch()
-
-        remote_hash = ''
-        with open('{}/.git/refs/remotes/origin/{}'.format(pkg_dir, branch), 'r') as f:
-            remote_hash = f.read().replace('\n', '')
-
         with open(self.db_file, 'r+') as f:
             pkg_entry = {
-                pkg: { 'remote': remote_hash, 'local': '' }
+                'name': pkg_name,
+                'rev': { 'remote': head_commit, 'local': '' }
             }
 
             curr_content = load(f)
@@ -74,42 +53,20 @@ class PackageDatabaseMgr:
 
             dump(curr_content, f)
 
-    def update_entry(self, pkg_entry, base_repo):
+    def update_entry(self, pkg_name, head_commit):
         """
         Update an existing package entry in the package database.
 
-        :pkg_entry: Name of the package to be added to the database.
-        :base_repo: Package repository name.
+        :pkg_name: Name of the package.
+        :head_commit: Hash of the head commit of the package.
 
         """
-        desc_file = '{}/{}/pkg_desc.json'.format(base_repo, pkg_entry)
-        pkg = ''
-        branch = ''
-
-        with open(desc_file, 'r') as pkg_desc:
-            pkg_desc_content = load(pkg_desc)
-
-            pkg = pkg_desc_content['name']
-            branch = pkg_desc_content['branch']
-
-        pkg_dir = '{}/{}/.repo'.format(
-            base_repo,
-            pkg_entry
-        )
-
-        pkg_repo = git.Repo(pkg_dir)
-        pkg_repo.remotes.origin.fetch()
-
-        remote_hash = ''
-        with open('{}/.git/refs/remotes/origin/{}'.format(pkg_dir, branch), 'r') as f:
-            remote_hash = f.read().replace('\n', '')
-
         with open(self.db_file, 'r+') as f:
             curr_content = load(f)
 
             for entry in curr_content:
-                if entry['name'] == pkg:
-                    entry['remote'] = remote_hash
+                if entry['name'] == pkg_name:
+                    entry['rev']['remote'] = head_commit
                     f.seek(0)
                     dump(curr_content, f)
 

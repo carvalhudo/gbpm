@@ -1,0 +1,7 @@
+{
+    "name": "foo_pkg",
+    "repo": "foo_repo",
+    "branch": "foo_branch",
+    "dependencies": [],
+    "maintainer": "André L. C. Moreira <alcm99@gmail.com>"
+}
