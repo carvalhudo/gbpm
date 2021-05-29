@@ -50,6 +50,30 @@ class UpdateListener(ABC):
         pass # pragma: no cover
 
     @abstractmethod
+    def on_master_repo_update_start(self, repo_name, branch_name):
+        """
+        Trigger an master_repo_update_start event, which indicates that a update
+        operation for a master repository has started.
+
+        :repo_name: Name of the repository which will be updated.
+        :branch_name: Name of the branch.
+
+        """
+        pass # pragma: no cover
+
+    @abstractmethod
+    def on_master_repo_update_finish(self, repo_name, branch_name):
+        """
+        Trigger an master_repo_update_finish event, which indicates that a
+        update operation for a master repository has finished.
+
+        :repo_name: Name of the repository which will be updated.
+        :branch_name: Name of the branch.
+
+        """
+        pass # pragma: no cover
+
+    @abstractmethod
     def on_pkg_update_start(self, pkg_name, branch_name):
         """
         Trigger an pkg_update_start event, which indicates that a update

@@ -32,7 +32,7 @@ class CommandProgress(git.remote.RemoteProgress):
 
     """
 
-    def __init__(self, listener, msg):
+    def __init__(self, listener, cmd_desc):
         """
         Initialize the internal data.
 
@@ -40,13 +40,31 @@ class CommandProgress(git.remote.RemoteProgress):
         git.remote.RemoteProgress.__init__(self)
 
         self.listener = listener
-        self.msg = msg
+        self.cmd_desc = cmd_desc
 
-    def update(self, op_code, cur_count, max_count, msg):
-        """Update the view with the current progress of the command.
+        # marking the start of the operation
+        self.update(0, 0, 0, self.cmd_desc)
+
+    def __del__(self):
+        """
+        TODO: Docstring for __del__.
+        :returns: TODO
 
         """
-        self.listener.on_update_progress(op_code, cur_count, max_count, self.msg)
+        # marking the end of the operation
+        self.update(1, 1, 1, self.cmd_desc)
+
+    def update(self, op_code, cur_count, max_count, *_):
+        """
+        Update the view with the current progress of the command.
+
+        """
+        self.listener.on_update_progress(
+            op_code,
+            cur_count,
+            max_count,
+            self.cmd_desc
+        )
 
 class UpdateCmd(Command):
 
@@ -55,6 +73,132 @@ class UpdateCmd(Command):
     local database with the upstream data related to the gur packages.
 
     """
+
+    class InitializeRepoCmd(Command):
+
+        """
+        Docstring for InitializeCommand.
+
+        """
+
+        def __init__(self, pkg_mgr, repo_id, branch_name, repo_url):
+            """
+            TODO: to be defined.
+
+            """
+            Command.__init__(self)
+
+            self.pkg_mgr = pkg_mgr
+            self.repo_id = repo_id
+            self.branch_name = branch_name
+            self.repo_url = repo_url
+
+        def execute(self, listener):
+            """
+            TODO: Docstring for execute.
+
+            :listener: TODO
+
+            """
+            listener.on_repo_update_start(self.repo_id, self.branch_name)
+
+            _ = git.Repo.clone_from(
+                self.repo_url,
+                self.repo_id,
+                branch=self.branch_name,
+                progress=CommandProgress(listener, 'Cloning master repo ...')
+            )
+
+            listener.on_repo_update_finish(self.repo_id, self.branch_name)
+
+            for pkg_entry in os.listdir(self.repo_id + '/src'):
+                pkg = PackageDesc(self.repo_id, pkg_entry)
+
+                listener.on_pkg_update_start(pkg.name, pkg.branch)
+
+                pkg_repo = git.Repo.init(pkg.dir)
+                origin = pkg_repo.create_remote('origin', pkg.repo)
+                origin.fetch(
+                    progress=CommandProgress(
+                        listener,
+                        'Fetching {} ...'.format(pkg.name)
+                    )
+                )
+
+                head_commit = pkg_repo.rev_parse('origin/{}'.format(pkg.branch))
+                self.pkg_mgr.add_entry(pkg.name, head_commit.hexsha)
+                listener.on_pkg_update_finish(pkg.name, pkg.branch)
+
+    class UpdateRepoCmd(Command):
+
+        """
+        Docstring for UpdateRepoCmd.
+
+        """
+
+        def __init__(self, pkg_mgr, repo_id, branch_name):
+            """
+            TODO: to be defined.
+
+            """
+            Command.__init__(self)
+
+            self.pkg_mgr = pkg_mgr
+            self.repo_id = repo_id
+            self.branch_name = branch_name
+
+        def execute(self, listener):
+            """
+            TODO: Docstring for execute.
+
+            :listener: TODO
+            :returns: TODO
+
+            """
+            listener.on_repo_update_start(self.repo_id, self.branch_name)
+
+            repo = git.Repo(self.repo_id)
+
+            listener.on_update_progress(1, 0, 1, 'Pulling master repo ...')
+            repo.remotes.origin.pull(self.branch_name)
+            listener.on_update_progress(1, 1, 1, 'Pulling master repo ...')
+
+            listener.on_repo_update_finish(self.repo_id, self.branch_name)
+
+            for pkg_entry in os.listdir(self.repo_id + '/src'):
+                pkg = PackageDesc(self.repo_id, pkg_entry)
+                pkg_repo = None
+
+                listener.on_pkg_update_start(pkg.name, pkg.branch)
+
+                if not os.path.isdir(pkg.dir):
+                    # new package for an existing repo
+                    os.mkdir(pkg.dir)
+
+                    pkg_repo = git.Repo.init(pkg.dir)
+                    origin = pkg_repo.create_remote('origin', pkg.repo)
+                    origin.fetch(
+                        progress=CommandProgress(
+                            listener,
+                            'Fetching {} ...'.format(pkg.name)
+                        )
+                    )
+
+                    head_commit = pkg_repo.rev_parse('origin/{}'.format(pkg.branch))
+                    self.pkg_mgr.add_entry(pkg.name, head_commit.hexsha)
+                else:
+                    pkg_repo = git.Repo(pkg.dir)
+                    pkg_repo.remotes.origin.fetch(
+                        progress=CommandProgress(
+                            listener,
+                            'Fetching {} ...'.format(pkg.name)
+                        )
+                    )
+
+                    head_commit = pkg_repo.rev_parse('origin/{}'.format(pkg.branch))
+                    self.pkg_mgr.update_entry(pkg.name, head_commit.hexsha)
+
+                listener.on_pkg_update_finish(pkg.name, pkg.branch)
 
     def __init__(self, pkg_mgr=None):
         """
@@ -77,63 +221,40 @@ class UpdateCmd(Command):
             try:
                 branch_name,repo_url = repo_entry.split(',')
                 repo_id = Utils.get_repo_id(repo_url)
+                inner_cmd = None
 
-                listener.on_repo_update_start(repo_id, branch_name)
+                listener.on_master_repo_update_start(
+                    repo_id,
+                    branch_name
+                )
 
                 if os.path.isdir(repo_id):
-                    repo = git.Repo(repo_id)
-
-                    listener.on_update_progress(1, 0, 1, 'Pulling master repo ...')
-                    repo.remotes.origin.pull(branch_name)
-                    listener.on_update_progress(1, 1, 1, 'Pulling master repo ...')
-
-                    for pkg_entry in os.listdir(repo_id + '/src'):
-                        pkg = PackageDesc(repo_id, pkg_entry)
-
-                        listener.on_pkg_update_start(pkg.name, pkg.branch)
-                        pkg_repo = git.Repo(pkg.dir)
-                        pkg_repo.remotes.origin.fetch(
-                            progress=CommandProgress(listener, 'Fetching {} ...'.format(pkg.name))
-                        )
-
-                        head_commit = pkg_repo.rev_parse(
-                            'origin/{}'.format(pkg.branch)
-                        )
-                        self.pkg_mgr.update_entry(pkg.name, head_commit.hexsha)
-                        listener.on_pkg_update_finish(pkg.name, pkg.branch)
-                else:
-                    _ = git.Repo.clone_from(
-                        repo_url,
+                    inner_cmd = UpdateCmd.UpdateRepoCmd(
+                        self.pkg_mgr,
                         repo_id,
-                        branch=branch_name,
-                        progress=CommandProgress(listener, 'Cloning master repo ...')
+                        branch_name
+                    )
+                else:
+                    inner_cmd = UpdateCmd.InitializeRepoCmd(
+                        self.pkg_mgr,
+                        repo_id,
+                        branch_name,
+                        repo_url
                     )
 
-                    for pkg_entry in os.listdir(repo_id + '/src'):
-                        pkg = PackageDesc(repo_id, pkg_entry)
+                inner_cmd.execute(listener)
 
-                        listener.on_pkg_update_start(pkg.name, pkg.branch)
-
-                        pkg_repo = git.Repo.init(pkg.dir)
-                        origin = pkg_repo.create_remote('origin', pkg.repo)
-                        origin.fetch(
-                            progress=CommandProgress(listener, 'Fetching {} ...'.format(pkg.name))
-                        )
-
-                        head_commit = pkg_repo.rev_parse(
-                            'origin/{}'.format(pkg.branch)
-                        )
-                        self.pkg_mgr.add_entry(pkg.name, head_commit.hexsha)
-                        listener.on_pkg_update_finish(pkg.name, pkg.branch)
-
-                listener.on_repo_update_finish(repo_id, branch_name)
+                listener.on_master_repo_update_finish(
+                    repo_id,
+                    branch_name
+                )
             except git.GitCommandError as err:
-                error_msg = ''
-                try:
-                    error_msg = error_map[err.command[1]]
-                except KeyError:
-                    error_msg = error_map['unknown']
-
-                listener.on_error(error_msg)
+                listener.on_update_progress(1, 1, 1, '')
+                listener.on_error(
+                    '{} {}'.format(error_map[err.command[1]], repo_id)
+                )
+            except Exception:
+                listener.on_update_progress(1, 1, 1, '')
+                listener.on_error(error_map['unknown'])
 
         listener.on_update_finish()
