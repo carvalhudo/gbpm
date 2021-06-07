@@ -2,8 +2,6 @@ from json import dump, load
 from os import chdir
 from os.path import isdir, isfile
 
-from package_desc import PackageDesc
-
 class PackageDatabaseMgr:
 
     """
