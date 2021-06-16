@@ -267,3 +267,43 @@ class UpdateCmd(Command):
                 listener.on_error(error_map['unknown'])
 
         listener.on_update_finish()
+
+class ListPkgsCmd(Command):
+
+    """
+    Implementation of 'ListPkgs' command. The main goal of this command is to
+    list all the available packages for installation.
+
+    """
+
+    def __init__(self, pkg_mgr=None):
+        """
+        Initialize the command dependencies.
+
+        """
+        self.pkg_mgr = PackageDatabaseMgr() if not pkg_mgr else pkg_mgr
+
+    def execute(self, listener):
+        """
+        Execute the list-pkgs command.
+
+        :listener: Listener to report the command events.
+
+        """
+        self.pkg_mgr.switch_dir()
+
+        for entry in os.listdir():
+            if not os.path.isdir(entry):
+                continue
+
+            for pkg_repo in os.listdir(entry):
+                repo_id = '{}/{}'.format(entry, pkg_repo)
+
+                listener.on_pkg_list_start(repo_id)
+
+                for pkg_entry in os.listdir('{}/src'.format(repo_id)):
+                    is_installed = self.pkg_mgr.is_pkg_installed(pkg_entry)
+
+                    listener.on_pkg_show(pkg_entry, is_installed)
+
+                listener.on_pkg_list_finish(repo_id)

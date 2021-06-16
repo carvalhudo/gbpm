@@ -1,7 +1,7 @@
 from unittest import TestCase, main
 
 from os import remove, getcwd, chdir
-from json import load
+from json import load, dump
 
 from package_database_mgr import PackageDatabaseMgr
 
@@ -211,6 +211,55 @@ class PackageDatabaseMgrTest(TestCase):
             read_content = load(f)
 
             self.assertEqual(read_content, expected_content)
+
+    def test_is_installed_with_non_installed_pkg(self):
+        """
+        GIVEN the specified package is not installed.
+        WHEN  the user issues an in_pkg_installed call for this package.
+        THEN  the return must be False.
+
+        """
+        pkg_name = 'fake_pkg'
+        pkg_hash = 'old_fake_hash'
+
+        self.mgr.add_entry(pkg_name, pkg_hash)
+        self.assertFalse(self.mgr.is_pkg_installed(pkg_name))
+
+    def test_is_installed_with_installed_pkg(self):
+        """
+        GIVEN the specified package is installed.
+        WHEN  the user issues an in_pkg_installed call for this package.
+        THEN  the return must be True.
+
+        """
+        pkg_name = 'fake_pkg'
+        remote_pkg_hash = 'remote_fake_hash'
+        local_pkg_hash = 'local_fake_hash'
+
+        self.mgr.add_entry(pkg_name, remote_pkg_hash)
+
+        # simulate a package installation at database level.
+        with open(self.mgr.db_file, 'r+') as f:
+            curr_content = load(f)
+
+            for entry in curr_content:
+                if entry['name'] == pkg_name:
+                    entry['rev']['local'] = local_pkg_hash
+                    f.seek(0)
+                    dump(curr_content, f)
+
+        self.assertTrue(self.mgr.is_pkg_installed(pkg_name))
+
+    def test_is_installed_with_non_existing_pkg(self):
+        """
+        GIVEN the specified package doesn't exist on database.
+        WHEN  the user issues an in_pkg_installed call for this package.
+        THEN  the return must be False.
+
+        """
+        pkg_name = 'fake_pkg'
+
+        self.assertFalse(self.mgr.is_pkg_installed(pkg_name))
 
 if __name__ == "__main__":
     main()

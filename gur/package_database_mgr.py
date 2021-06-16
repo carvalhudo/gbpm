@@ -76,3 +76,21 @@ class PackageDatabaseMgr:
 
         """
         chdir(self.pkg_dir)
+
+    def is_pkg_installed(self, pkg_name):
+        """
+        Verify if a given package is installed.
+
+        :pkg_name: Name of the package.
+        :returns: True if the package is installed; otherwise False.
+
+        """
+        with open(self.db_file, 'r') as f:
+            curr_content = load(f)
+
+            for entry in curr_content:
+                if entry['name'] == pkg_name and entry['rev']['local']:
+                    return True
+
+
+        return False

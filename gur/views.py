@@ -1,8 +1,9 @@
 from tqdm import tqdm
 
 from os import get_terminal_size
-from commands import UpdateCmd
+from commands import UpdateCmd, ListPkgsCmd
 from update_listener import UpdateListener
+from list_pkgs_listener import ListPkgsListener
 
 class CliUpdateView:
 
@@ -230,12 +231,15 @@ class CliUpdateView:
         of the update operation.
 
         """
-        if self.prog_bar.total != max_count:
-            self.prog_bar.total = max_count
-            self.prog_bar.set_description_str(' ' + msg)
+        # if an 'on_error' event is received before the end of the command (when
+        # we receive a progress event), the bar will be destroyed
+        if self.prog_bar is not None:
+            if self.prog_bar.total != max_count:
+                self.prog_bar.total = max_count
+                self.prog_bar.set_description_str(' ' + msg)
 
-        self.prog_bar.n = cur_count
-        self.prog_bar.refresh()
+            self.prog_bar.n = cur_count
+            self.prog_bar.refresh()
 
     def on_error(self, msg):
         """
@@ -250,3 +254,106 @@ class CliUpdateView:
         self.prog_bar = None
 
         print('')
+
+class CliListPkgsView:
+
+    """
+    Implementation of list-pkgs view.
+
+    """
+
+    class EventHandler(ListPkgsListener):
+
+        """
+        Implementation of the event handler class, which will be responsible to
+        receive the operation events and propagate them to the view.
+
+        """
+
+        def __init__(self, view):
+            """
+            Initialize the event handler internal data.
+
+            """
+            super().__init__()
+
+            self.view = view
+
+        def on_pkg_list_start(self, pkg_repo):
+            """
+            Trigger an on_pkg_list_start event, which indicates the start of list
+            operation.
+
+            :pkg_repo: Name of the package repository.
+
+            """
+            self.view.on_pkg_list_start(pkg_repo)
+
+        def on_pkg_list_finish(self, pkg_repo):
+            """
+            Trigger an on_pkg_list_finish event, which indicates the end of list
+            operation.
+
+            :pkg_repo: Name of the package repository.
+
+            """
+            self.view.on_pkg_list_finish(pkg_repo)
+
+        def on_pkg_show(self, pkg_name, is_installed):
+            """
+            Trigger an on_pkg_show event, which indicates that a package was
+            found.
+
+            :pkg_name: Name of the package.
+            :is_installed: True if the package is installed; otherwise False.
+
+            """
+            self.view.on_pkg_show(pkg_name, is_installed)
+
+    def __init__(self):
+        """
+        Initialize the list-pkg view internal data.
+
+        """
+        self.cmd = ListPkgsCmd()
+        self.event_handler = CliListPkgsView.EventHandler(self)
+
+    def list_pkgs(self):
+        """
+        Trigger the list-pkgs command.
+
+        """
+        self.cmd.execute(self.event_handler)
+
+    def on_pkg_list_start(self, pkg_repo):
+        """
+        Trigger an on_pkg_list_start event, which indicates the start of list
+        operation.
+
+        :pkg_repo: Name of the package repository.
+
+        """
+        print('Packages\n')
+
+    def on_pkg_list_finish(self, pkg_repo):
+        """
+        Trigger an on_pkg_list_finish event, which indicates the end of list
+        operation.
+
+        :pkg_repo: Name of the package repository.
+
+        """
+        print('')
+
+    def on_pkg_show(self, pkg_name, is_installed):
+        """
+        Trigger an on_pkg_show event, which indicates that a package was
+        found.
+
+        :pkg_name: Name of the package.
+        :is_installed: True if the package is installed; otherwise False.
+
+        """
+        print('[{}] {}'.format(
+            '+' if is_installed else '-', pkg_name)
+        )

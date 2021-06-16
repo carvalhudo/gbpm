@@ -1,4 +1,4 @@
-from views import CliUpdateView
+from views import CliUpdateView, CliListPkgsView
 
 class App:
 
@@ -24,3 +24,6 @@ class App:
         if self.args.update:
             view = CliUpdateView()
             view.update()
+        elif self.args.list_pkgs:
+            view = CliListPkgsView()
+            view.list_pkgs()
