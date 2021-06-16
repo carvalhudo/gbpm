@@ -29,9 +29,15 @@ def parse_args(): # pragma: no cover
         action='store_true'
     )
 
+    parser.add_argument(
+        '-l',
+        '--list-pkgs',
+        help='list the available packages',
+        action='store_true'
+    )
+
     # no arguments were provided
     if len(argv) == 1:
-        print(banner)
         parser.print_help()
 
     return parser.parse_args()
